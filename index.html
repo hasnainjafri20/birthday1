@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Happy Birthday Love 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Pacifico&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {margin:0;padding:0;box-sizing:border-box;}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #ff69b4);
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+      overflow: hidden;
+      color: white;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 1;
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3.5rem;
+      color: #ff66cc;
+      text-shadow: 0 0 20px #ff66cc, 0 0 60px #ff99cc;
+      position: relative;
+      animation: pulse 2s infinite;
+    }
+
+    h1::before {
+      content: '';
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      border: 3px dashed #ff66cc;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+      100% { transform: translateX(-50%) rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .quotes {
+      margin-top: 20px;
+      font-size: 1.4rem;
+      width: 80%;
+      max-width: 700px;
+      color: #fbd6e6;
+      min-height: 40px;
+    }
+
+    .btn {
+      margin-top: 40px;
+      padding: 15px 40px;
+      background: transparent;
+      border: 2px solid #ff66cc;
+      color: #fff;
+      font-size: 1.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff99cc, 0 0 30px #ff66cc;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #ff66cc;
+      box-shadow: 0 0 30px #ff99cc, 0 0 60px #ff66cc;
+      transform: scale(1.05);
+    }
+
+    canvas, .heartTrail {
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heartTrail {
+        position: absolute;
+        font-size: 24px;
+        animation: fadeShrink 1s ease-out forwards;
+        pointer-events: none;
+        z-index: 1000;
+        }
+
+        @keyframes fadeShrink {
+        0% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0.5) translateY(-30px);
+        }
+    }
+
+    .heartTrail::before, .heartTrail::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .heartTrail::before { top: -10px; left: 0; }
+    .heartTrail::after { top: 0; left: 10px; }
+
+    #videoModal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        }
+
+        .videoOverlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 1;
+        }
+
+        .videoContent {
+        position: relative;
+        z-index: 2;
+        background: #000;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 30px rgba(255,255,255,0.3);
+        max-width: 90%;
+        max-height: 80vh;
+        }
+
+        .videoContent video {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        }
+
+        .closeBtn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #ff66cc;
+        color: white;
+        font-size: 24px;
+        border-radius: 50%;
+        padding: 5px 10px;
+        cursor: pointer;
+        box-shadow: 0 0 10px #ff66cc;
+        }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Happy Birthday, Love 💖</h1>
+  <div class="quotes" id="quotes">Loading your birthday quote...</div>
+  <button class="btn" onclick="celebrate()">🎉 Celebrate 🎉</button>
+</div>
+
+<canvas id="starCanvas"></canvas>
+<canvas id="confetti"></canvas>
+
+<div id="videoModal" style="display: none;">
+  <div class="videoOverlay"></div>
+  <div class="videoContent">
+    <span class="closeBtn" onclick="closeVideo()">✖</span>
+    <video id="birthdayVideo" autoplay controls>
+      <source src="birthday video.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<audio id="bg-music" autoplay loop>
+  <source src="Pretty Little Sidrah (1).mp3" type="audio/mp3">
+</audio>
+
+<script>
+  // STAR BACKGROUND
+  const starCanvas = document.getElementById("starCanvas");
+  const ctx = starCanvas.getContext("2d");
+  let w, h;
+  function resize() {
+    w = starCanvas.width = window.innerWidth;
+    h = starCanvas.height = window.innerHeight;
+  }
+  resize();
+
+  let stars = Array(100).fill().map(() => ({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    r: Math.random() * 1.5,
+    d: Math.random() * 1
+  }));
+
+  function drawStars() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "white";
+    ctx.shadowBlur = 5;
+    ctx.shadowColor = "white";
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    updateStars();
+  }
+
+  function updateStars() {
+    stars.forEach(s => {
+      s.y += s.d;
+      if (s.y > h) {
+        s.y = 0;
+        s.x = Math.random() * w;
+      }
+    });
+  }
+
+  function animateStars() {
+    drawStars();
+    requestAnimationFrame(animateStars);
+  }
+  animateStars();
+  window.addEventListener("resize", resize);
+
+  // LOVE QUOTES ROTATION
+  const quotes = [
+    "You’re my favorite person to exist in the entire timeline. 💫",
+    "Every heartbeat is a reminder that I love you. 💗",
+    "The stars shine brighter when you smile. 🌟",
+    "With you, every moment is a celebration. 🎉",
+    "You're not just special, you're my universe. 🌌"
+  ];
+  let quoteIndex = 0;
+  setInterval(() => {
+    document.getElementById("quotes").textContent = quotes[quoteIndex];
+    quoteIndex = (quoteIndex + 1) % quotes.length;
+  }, 4000);
+
+  // CONFETTI EFFECT
+  function celebrate() {
+  // show confetti
+  const confetti = document.getElementById("confetti");
+  const cCtx = confetti.getContext("2d");
+  confetti.width = window.innerWidth;
+  confetti.height = window.innerHeight;
+
+  let particles = Array(150).fill().map(() => ({
+    x: Math.random() * confetti.width,
+    y: Math.random() * confetti.height - confetti.height,
+    r: Math.random() * 6 + 4,
+    d: Math.random() * 150 + 50,
+    color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+    tilt: Math.random() * 10 - 10
+  }));
+
+  function drawConfetti() {
+    cCtx.clearRect(0, 0, confetti.width, confetti.height);
+    particles.forEach(p => {
+      cCtx.fillStyle = p.color;
+      cCtx.fillRect(p.x + p.tilt, p.y, p.r, p.r);
+    });
+    updateConfetti();
+  }
+
+  function updateConfetti() {
+    particles.forEach(p => {
+      p.y += Math.cos(p.d) + 2;
+      p.tilt += Math.sin(p.d) * 0.5;
+      if (p.y > confetti.height) {
+        p.y = -10;
+        p.x = Math.random() * confetti.width;
+      }
+    });
+  }
+
+  function animateConfetti() {
+    drawConfetti();
+    requestAnimationFrame(animateConfetti);
+  }
+
+  animateConfetti();
+
+  // Show video modal
+  document.getElementById("videoModal").style.display = "flex";
+}
+
+function closeVideo() {
+  document.getElementById("videoModal").style.display = "none";
+  const video = document.getElementById("birthdayVideo");
+  video.pause();
+  video.currentTime = 0;
+}
+
+
+
+  // CURSOR HEART TRAIL
+    document.addEventListener("mousemove", e => {
+    const heart = document.createElement("div");
+    heart.className = "heartTrail";
+    heart.textContent = "❤️";
+    heart.style.left = `${e.pageX - 10}px`;
+    heart.style.top = `${e.pageY - 10}px`;
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1000);
+    });
+</script>
+
+</body>
+</html>
